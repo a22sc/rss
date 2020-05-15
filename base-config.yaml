@@ -6,6 +6,8 @@ spam_sleep: 2
 # The prefix for all commands
 # It has to be prefixed with ! in matrix to be recognised
 command_prefix: "rss"
+# Send Messages as TEXT or NOTICE
+message_type: "NOTICE"
 # Users who can bypass room permission checks
 admins:
 - "@user:example.com"
