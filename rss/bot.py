@@ -83,7 +83,7 @@ class RSSBot(Plugin):
             "feed_subtitle": feed.subtitle,
             "feed_link": feed.link,
             **entry._asdict(),
-        })), msgtype=MessageType.TEXT)
+        })), msgtype=msg_type)
 
     async def _broadcast(self, feed: Feed, entry: Entry, subscriptions: List[Subscription]) -> None:
         spam_sleep = self.config["spam_sleep"]
