@@ -21,6 +21,7 @@ import asyncio
 
 import aiohttp
 import feedparser
+import html2markdown
 
 from mautrix.util.config import BaseProxyConfig, ConfigUpdateHelper
 from mautrix.types import (StateEvent, EventType, MessageType, RoomID, EventID,
@@ -37,6 +38,7 @@ class Config(BaseProxyConfig):
         helper.copy("spam_sleep")
         helper.copy("command_prefix")
         helper.copy("admins")
+        helper.copy("message_type")
 
 
 class RSSBot(Plugin):
@@ -71,13 +73,17 @@ class RSSBot(Plugin):
 
     def _send(self, feed: Feed, entry: Entry, template: Template, room_id: RoomID
               ) -> Awaitable[EventID]:
-        return self.client.send_markdown(room_id, template.safe_substitute({
+        if self.config["message_type"] in ["TEXT", 1]:
+            msg_type=MessageType.TEXT
+        else:
+            msg_type=MessageType.NOTICE
+        return self.client.send_markdown(room_id, html2markdown.convert(template.safe_substitute({
             "feed_url": feed.url,
             "feed_title": feed.title,
             "feed_subtitle": feed.subtitle,
             "feed_link": feed.link,
             **entry._asdict(),
-        }), msgtype=MessageType.NOTICE)
+        })), msgtype=MessageType.TEXT)
 
     async def _broadcast(self, feed: Feed, entry: Entry, subscriptions: List[Subscription]) -> None:
         spam_sleep = self.config["spam_sleep"]
